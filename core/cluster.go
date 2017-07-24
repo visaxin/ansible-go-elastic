@@ -132,30 +132,31 @@ func dataPathAllocation(dataPathDir []string, index int, total int) []string {
 	return dataPathDir[start : start+avg]
 }
 
-func (this *Cluster) generateAnsibleYml(cacheDir string, templateFile string) error {
+func (this *Cluster) generateAnsibleYml(cacheDir string, templateFile string) (string, error) {
 
 	var err error
+	var path string
 	var parsedTemplate *template.Template
 	parsedTemplate, err = template.ParseFiles(templateFile)
 	if err != nil {
-		return err
+		return path, err
 	}
 
 	templateBuff := new(bytes.Buffer)
 	err = parsedTemplate.Execute(templateBuff, this)
 	if err != nil {
-		return err
+		return path, err
 	}
 
-	path := fmt.Sprintf("%s/%s-%s", cacheDir, this.ClusterName, time.Now().Format(time.RFC3339))
+	path = fmt.Sprintf("%s/%s-%s", cacheDir, this.ClusterName, time.Now().Format(time.RFC3339))
 	err = os.MkdirAll(path, 0755)
 	if err != nil {
-		return err
+		return path, err
 	}
 	fileName := fmt.Sprintf("%s/depoy.yml", path)
-	return ioutil.WriteFile(fileName, templateBuff.Bytes(), 0655)
+	return path, ioutil.WriteFile(fileName, templateBuff.Bytes(), 0655)
 }
 
-func (this *Cluster) Run() error {
+func (this *Cluster) CreateConfigFile() (string, error) {
 	return this.generateAnsibleYml(".cache", "deploy.yml")
 }

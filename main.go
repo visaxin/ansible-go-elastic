@@ -24,7 +24,10 @@ func main() {
 	v1 := router.Group("/api/v1")
 	{
 		v1.POST("/cluster", handler.CoreHandler)
+
+		// plugin
 		v1.GET("/plugins", handler.PluginHandler)
+		v1.POST("/plugins", handler.UploadPlugin)
 	}
 
 	router.Run(":" + listenPort)

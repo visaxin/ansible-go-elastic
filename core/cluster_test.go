@@ -39,5 +39,6 @@ func TestClusterInput(t *testing.T) {
 	assert.Equal(t, exceptLogPath, c.Hosts[0].Instances[0].LogPathDir)
 
 	defer os.RemoveAll(".cache")
-	assert.NoError(t, c.generateAnsibleYml(".cache", "../deploy.yml"))
+	_, err = c.generateAnsibleYml(".cache", "../deploy.yml")
+	assert.NoError(t, err)
 }

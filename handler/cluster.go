@@ -25,20 +25,23 @@ func CoreHandler(c *gin.Context) {
 		return
 	}
 
-	err = cluster.Run()
+	var taskName string
+	taskName, err = cluster.CreateConfigFile()
 	if err != nil {
 		c.AbortWithStatusJSON(503, gin.H{"error": err, "msg": "fail to create ansible yml file"})
 		return
 	}
 
-	// TODO register resource request
+	// TODO Optional register resource request
+	// TODO  Optional release resource when deploy fail
+
 	//metadata.DataSource(nil).Save()
 	// TODO start to deploy
 
 	// TODO confirm deploy result
 
-	// TODO release resource when deploy fail
-
-	c.JSON(200, gin.H{})
+	c.JSON(200, gin.H{
+		"name": taskName,
+	})
 
 }

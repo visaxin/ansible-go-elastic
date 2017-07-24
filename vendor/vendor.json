@@ -77,11 +77,17 @@
 			"revisionTime": "2016-07-18T13:41:25Z"
 		},
 		{
+			"checksumSHA1": "1D8GzeoFGUs5FZOoyC2DpQg8c5Y=",
+			"path": "gopkg.in/mgo.v2",
+			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
+			"revisionTime": "2016-08-18T02:01:20Z"
+		},
+		{
 			"checksumSHA1": "KHOUE9QA14iPCFNIVs5X72MYdkA=",
 			"path": "gopkg.in/yaml.v2",
 			"revision": "3b4ad1db5b2a649883ff3782f5f9f6fb52be71af",
 			"revisionTime": "2017-07-13T20:15:20Z"
 		}
 	],
-	"rootPath": "go-ansible-elastic-cluster"
+	"rootPath": "github.com/go-ansible-elastic-cluster"
 }
