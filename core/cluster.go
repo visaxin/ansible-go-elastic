@@ -5,41 +5,56 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"os"
 	"runtime"
 	"strings"
 	"time"
 )
 
 type Instance struct {
-	Config      map[string]interface{}
-	DataPathDir string // "dir1,dir2"
-	LogPathDir  string
+	Config      map[string]interface{} `json:"config"`
+	DataPathDir string                 `json:"data_path_dir" ` // "dir1,dir2"
+	LogPathDir  string                 `json:"log_path_dir"`
 }
 
 type Host struct {
-	Instances []Instance
-	HostName  string
+	Instances []Instance `json:"instances"`
+	HostName  string     `json:"host_name"`
 }
 
 type Plugin struct {
-	Name    string
-	Version string
-	Url     string
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	url     string
 }
 
-func (this *Plugin) SetUrl() {
-	this.Url = fmt.Sprintf("http://example.com/%s_%s.zip", this.Name, this.Version)
+func (this *Plugin) SetUrl() string {
+	hostName, _ := os.Hostname()
+	this.url = fmt.Sprintf("http://%s/%s-%s.zip", hostName, this.Name, this.Version)
+	return this.url
 }
 
 type Cluster struct {
-	Hosts       []Host
-	ClusterName string
-	EsConfig    map[string]interface{} // for some common config in a cluster
-	JVMConfig   map[string]interface{} // for config jvm
-	Mode        string
-	DataPathDir []string
-	LogPathDir  string
-	Plugins     []Plugin
+	Hosts       []Host                 `json:"hosts"`
+	ClusterName string                 `json:"cluster_name"`
+	EsConfig    map[string]interface{} `json:"es_config"`  // for some common config in a cluster
+	JVMConfig   map[string]interface{} `json:"jvm_config"` // for config jvm
+	Mode        string                 `json:"mode"`
+	DataPathDir []string               `json:"data_path_dir"`
+	LogPathDir  string                 `json:"log_path_dir"`
+	Plugins     []Plugin               `json:"plugins"`
+}
+
+func (this *Cluster) Init() *Cluster {
+	if this.EsConfig == nil {
+		this.EsConfig = make(map[string]interface{})
+	}
+	initInstanceConfig(*this)
+	this.EsConfig["discovery.zen.ping.unicast.hosts"] = strings.Join(zenPingList(*this), ",")
+	for k, v := range commonConfig {
+		this.EsConfig[k] = v
+	}
+	return this
 }
 
 func Create(name string, hosts []Host, dataPathDir []string, logPathDir string) *Cluster {
@@ -50,17 +65,7 @@ func Create(name string, hosts []Host, dataPathDir []string, logPathDir string) 
 		LogPathDir:  logPathDir,
 		JVMConfig:   map[string]interface{}{"es_heap_size": "20g"},
 	}
-
-	initInstanceConfig(c)
-	zenPingList := zenPingList(c)
-	esConfig := make(map[string]interface{}, 0)
-	esConfig["discovery.zen.ping.unicast.hosts"] = strings.Join(zenPingList, ",")
-	for k, v := range commonConfig {
-		esConfig[k] = v
-	}
-	c.EsConfig = esConfig
-
-	return &c
+	return c.Init()
 }
 
 // select master node from Hosts
@@ -127,10 +132,11 @@ func dataPathAllocation(dataPathDir []string, index int, total int) []string {
 	return dataPathDir[start : start+avg]
 }
 
-func (this *Cluster) generateAnsibleYml() error {
+func (this *Cluster) generateAnsibleYml(cacheDir string, templateFile string) error {
+
 	var err error
 	var parsedTemplate *template.Template
-	parsedTemplate, err = template.ParseFiles("deploy.yml")
+	parsedTemplate, err = template.ParseFiles(templateFile)
 	if err != nil {
 		return err
 	}
@@ -141,10 +147,15 @@ func (this *Cluster) generateAnsibleYml() error {
 		return err
 	}
 
-	fileName := fmt.Sprintf("%s-s/deploy.yml", this.ClusterName, time.Now().Format(time.RFC3339))
+	path := fmt.Sprintf("%s/%s-%s", cacheDir, this.ClusterName, time.Now().Format(time.RFC3339))
+	err = os.MkdirAll(path, 0755)
+	if err != nil {
+		return err
+	}
+	fileName := fmt.Sprintf("%s/depoy.yml", path)
 	return ioutil.WriteFile(fileName, templateBuff.Bytes(), 0655)
 }
 
-func (this *Cluster) Run() {
-	this.generateAnsibleYml()
+func (this *Cluster) Run() error {
+	return this.generateAnsibleYml(".cache", "deploy.yml")
 }

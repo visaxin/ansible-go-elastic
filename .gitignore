@@ -19,3 +19,4 @@
 deploy-new.yml
 vendor/github.com/
 vendor/gopkg.in/
+.cache/
