@@ -12,8 +12,7 @@ import (
 
 type Instance struct {
 	Config      map[string]interface{}
-	JvmConfig   map[string]interface{} // dynamic config for each instance for jvm and es
-	DataPathDir string                 // "dir1,dir2"
+	DataPathDir string // "dir1,dir2"
 	LogPathDir  string
 }
 

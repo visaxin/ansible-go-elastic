@@ -24,6 +24,7 @@ func main() {
 	v1 := router.Group("/api/v1")
 	{
 		v1.POST("/cluster", handler.CoreHandler)
+		v1.GET("/plugins", handler.PluginHandler)
 	}
 
 	// admin interface
