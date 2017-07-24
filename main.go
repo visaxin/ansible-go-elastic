@@ -27,13 +27,6 @@ func main() {
 		v1.GET("/plugins", handler.PluginHandler)
 	}
 
-	// admin interface
-	//v1.Use(handler.Auth)
-	//{
-	//	v1.POST("/admin/env", handler.UpdateEnvHandler)                   // update email server config
-	//	v1.POST("/admin/template", handler.UpdateTemplateManuallyHandler) // update template manually
-	//}
-
 	router.Run(":" + listenPort)
 
 	return
