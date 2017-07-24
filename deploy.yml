@@ -1,0 +1,24 @@
+---
+{{ range $h := $.Hosts }}{{ range $i,$e := $h.Instances }}
+-
+  hosts: {{ $h.HostName }}
+  roles:
+    -
+      es_config:
+        cluster.name: {{$.ClusterName}}
+        {{ range $k,$v := $e.Config }}{{ $k }}: "{{ $v }}"
+        {{ end }}{{ range $k,$v := $.EsConfig }}{{ $k }}: "{{ $v }}"
+        {{ end }}
+      es_heap_size: {{index $.JVMConfig "es_heap_size" }}
+      es_instance_name: {{ $h.HostName }}-{{ $i }}
+      es_data_dirs: "{{ $e.DataPathDir }}"
+      es_log_dir: "{{ $e.LogPathDir }}"
+      role: elasticsearch
+  vars:
+    es_plugins:
+      -
+        {{ range $p := $.Plugins }}plugin: {{ $p.Url }} {{ end }}
+    es_scripts: false
+    es_templates: false
+    es_version_lock: false
+{{ end }}{{ end }}
