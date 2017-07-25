@@ -49,7 +49,6 @@ func TestClusterInput(t *testing.T) {
 	for _, f := range fs {
 		name = f.Name()
 	}
-
 	_, err = ExecuteDeploy(name)
-	assert.Error(t, err)
+	assert.NoError(t, err)
 }

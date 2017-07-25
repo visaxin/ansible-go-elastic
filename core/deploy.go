@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
 	"os/exec"
 )
 
+// execute ansible-playbook command && return the execute result
 func ExecuteDeploy(name string) ([]byte, error) {
 	var out []byte
 	deploys, err := ioutil.ReadDir(DefaultCacheDir)
@@ -27,21 +30,28 @@ func ExecuteDeploy(name string) ([]byte, error) {
 	}
 
 	if found {
-		targetFile := fmt.Sprintf("%s/%s/%s", DefaultCacheDir, name, DefaultYmlFile)
-		cmd := exec.Command("ansible-playbook", targetFile, ">> status.txt")
 		var outBuf bytes.Buffer
-		cmd.Stdout = &outBuf
-		cmd.Stderr = &outBuf
+		targetFile := fmt.Sprintf("%s/%s/%s", DefaultCacheDir, name, DefaultYmlFile)
+
+		f, err := os.OpenFile(targetFile+".status", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0655)
+		if err != nil {
+			return outBuf.Bytes(), err
+		}
+		mWriter := io.MultiWriter(f, os.Stdout, &outBuf)
+		cmd := exec.Command("ansible-playbook", targetFile)
+		cmd.Stdout = mWriter
+		cmd.Stderr = mWriter
+
+		fmt.Println(outBuf.String())
 		err = cmd.Run()
 		if err != nil {
 			return outBuf.Bytes(), err
 		}
 
-		go func() {
-			for {
-				outBuf.Next()
-			}
-		}()
+		//err = cmd.Wait()
+		//if err != nil {
+		//	return outBuf.Bytes(), nil
+		//}
 
 		return outBuf.Bytes(), nil
 	}
