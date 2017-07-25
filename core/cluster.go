@@ -51,10 +51,7 @@ func (this *Cluster) Init() *Cluster {
 		this.EsConfig = make(map[string]interface{})
 	}
 	initInstanceConfig(*this)
-	this.EsConfig["discovery.zen.ping.unicast.hosts"] = strings.Join(zenPingList(*this), ",")
-	for k, v := range commonConfig {
-		this.EsConfig[k] = v
-	}
+	updateInstanceConfig(*this)
 	return this
 }
 
@@ -86,6 +83,17 @@ func zenPingList(c Cluster) []string {
 	return zenPingList
 }
 
+func updateInstanceConfig(c Cluster) {
+	list := strings.Join(zenPingList(c), ",")
+	for sh, h := range c.Hosts {
+		for serial, i := range h.Instances {
+			i.Config["discovery.zen.ping.unicast.hosts"] = list
+			h.Instances[serial] = i
+		}
+		c.Hosts[sh] = h
+	}
+}
+
 // init for some special config
 // node.maser
 // http.port
@@ -104,8 +112,16 @@ func initInstanceConfig(c Cluster) {
 			processorMax = 1
 		}
 		for serial, i := range h.Instances {
-			i.Config = make(map[string]interface{}, 0)
-
+			if i.Config == nil {
+				i.Config = commonConfig
+			} else {
+				for k, v := range commonConfig {
+					if _, ok := i.Config[k]; ok {
+						continue
+					}
+					i.Config[k] = v
+				}
+			}
 			var httpPort = 9200 + serial
 			var transPort = 9300 + serial
 			if _, ok := i.Config["http.port"]; !ok {
@@ -114,13 +130,22 @@ func initInstanceConfig(c Cluster) {
 			if _, ok := i.Config["transport.tcp.port"]; !ok {
 				i.Config["transport.tcp.port"] = transPort
 			}
+			if _, ok := i.Config["processors"]; !ok {
+				i.Config["processors"] = processorMax
+			}
+			if _, ok := i.Config["node.master"]; !ok {
+				i.Config["node.master"] = true
+			}
 
-			i.Config["processors"] = processorMax
-			i.Config["node.master"] = true
 			i.Config["network.host"] = h.HostName
 			i.Config["network.publish_host"] = h.HostName
-			i.DataPathDir = strings.Join(dataPathAllocation(c.DataPathDir, serial, len(h.Instances)), ",")
-			i.LogPathDir = c.LogPathDir
+
+			if i.DataPathDir == "" {
+				i.DataPathDir = strings.Join(dataPathAllocation(c.DataPathDir, serial, len(h.Instances)), ",")
+			}
+			if i.LogPathDir == "" {
+				i.LogPathDir = c.LogPathDir
+			}
 			h.Instances[serial] = i
 		}
 		hosts[sh] = h

@@ -1,11 +1,10 @@
 package core
 
-import "testing"
 import (
 	"encoding/json"
 	"io/ioutil"
-
 	"os"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
