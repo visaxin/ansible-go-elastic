@@ -10,10 +10,11 @@ One-click to build production level Elasticsearch.
 1. Install ansible 
 
 2. Clone ansible-elasticsearch and make `elasticsearch` role availiable in ansible globlly.
-   `git clone https://github.com/elastic/ansible-elasticsearch`
-   `sudo mkdir -p /etc/ansible/roles/ && mv ansible-elasticsearch /etc/ansible/roles`
   
-3. `git clone https://github.com/visaxin/ansible-go-elastic.git && cd ansible-go-elastic && go build`
+      `git clone https://github.com/elastic/ansible-elasticsearch`
+      `sudo mkdir -p /etc/ansible/roles/ && mv ansible-elasticsearch /etc/ansible/roles`
+  
+3.    `git clone https://github.com/visaxin/ansible-go-elastic.git && cd ansible-go-elastic && go build`
 
 4. start `go-ansible-elastic-cluster` default listen on `8080`
 
