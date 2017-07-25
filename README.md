@@ -2,7 +2,7 @@
 One-click to build production level Elasticsearch.
 
 ## Setup guide
-> quire
+> require
 *  Go 1.8.x 
 *  Ansible 2.x
 
