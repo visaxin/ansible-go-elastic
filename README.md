@@ -35,7 +35,7 @@ Example:
           ],
           "host_name": "cs21"
         }
-      ],
+      ],
       "cluster_name": "test",
       "data_path_dir": [
         "/disk1",
