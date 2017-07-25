@@ -1,4 +1,14 @@
----
+package bootstrap
+
+import (
+	"io/ioutil"
+
+	"log"
+
+	"github.com/go-ansible-elastic-cluster/core"
+)
+
+var template = []byte(`---
 {{ range $h := $.Hosts }}{{ range $i,$e := $h.Instances }}
 -
   hosts: {{ $h.HostName }}
@@ -21,3 +31,12 @@
     es_templates: false
     es_version_lock: false
 {{ end }}{{ end }}
+`)
+
+// generate a template yml file using go-template syntax
+func TemplateFile() {
+	err := ioutil.WriteFile(core.DefaultYmlFile, template, 0655)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

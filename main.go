@@ -5,11 +5,13 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-ansible-elastic-cluster/bootstrap"
 	"github.com/go-ansible-elastic-cluster/handler"
 )
 
 func main() {
 
+	bootstrap.TemplateFile()
 	var listenPort string
 
 	flag.StringVar(&listenPort, "p", os.Getenv("PORT_HTTP"), "listen port")

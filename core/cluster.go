@@ -47,9 +47,6 @@ type Cluster struct {
 }
 
 func (this *Cluster) Init() *Cluster {
-	if this.EsConfig == nil {
-		this.EsConfig = make(map[string]interface{})
-	}
 	initInstanceConfig(*this)
 	updateInstanceConfig(*this)
 	return this
