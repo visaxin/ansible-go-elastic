@@ -38,7 +38,16 @@ func TestClusterInput(t *testing.T) {
 	exceptLogPath := "/disk1/log"
 	assert.Equal(t, exceptLogPath, c.Hosts[0].Instances[0].LogPathDir)
 
-	defer os.RemoveAll(".cache")
-	_, err = c.generateAnsibleYml(".cache", "../deploy.yml")
+	defer os.RemoveAll(DefaultCacheDir)
+	_, err = c.generateAnsibleYml(DefaultCacheDir, "../deploy.yml")
 	assert.NoError(t, err)
+
+	var name string
+	fs, err := ioutil.ReadDir(DefaultCacheDir)
+	for _, f := range fs {
+		name = f.Name()
+	}
+
+	_, err = ExecuteDeploy(name)
+	assert.Error(t, err)
 }

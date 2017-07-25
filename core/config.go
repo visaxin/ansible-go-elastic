@@ -22,4 +22,9 @@ var commonConfig = map[string]interface{}{
 	"node.data":                             true,
 }
 
-const StandaloneMode string = "standalone"
+const (
+	StandaloneMode string = "standalone"
+
+	DefaultCacheDir = ".cache"
+	DefaultYmlFile  = "deploy.yml"
+)

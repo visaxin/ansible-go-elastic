@@ -30,6 +30,7 @@ type Plugin struct {
 
 func (this *Plugin) SetUrl() string {
 	hostName, _ := os.Hostname()
+	// TODO how to connect to localhost:<PORT>
 	this.url = fmt.Sprintf("http://%s/%s-%s.zip", hostName, this.Name, this.Version)
 	return this.url
 }
@@ -153,10 +154,11 @@ func (this *Cluster) generateAnsibleYml(cacheDir string, templateFile string) (s
 	if err != nil {
 		return path, err
 	}
-	fileName := fmt.Sprintf("%s/depoy.yml", path)
-	return path, ioutil.WriteFile(fileName, templateBuff.Bytes(), 0655)
+
+	return path, ioutil.WriteFile(path, templateBuff.Bytes(), 0655)
 }
 
 func (this *Cluster) CreateConfigFile() (string, error) {
-	return this.generateAnsibleYml(".cache", "deploy.yml")
+	return this.generateAnsibleYml(DefaultCacheDir, DefaultYmlFile)
+
 }
