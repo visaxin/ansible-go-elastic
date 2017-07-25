@@ -1,5 +1,7 @@
 # ansible-go-elastic
-One-click to build production level Elasticsearch
+One-click to build production level Elasticsearch.
+
+Dependency: https://github.com/elastic/ansible-elasticsearch
 
 
 Example:
