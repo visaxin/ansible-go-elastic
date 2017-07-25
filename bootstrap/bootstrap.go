@@ -27,9 +27,8 @@ var template = []byte(`---
     es_plugins:
       -
         {{ range $p := $.Plugins }}plugin: {{ $p.Url }} {{ end }}
-    es_scripts: false
-    es_templates: false
-    es_version_lock: false
+    {{ range $k,$v := $.Vars }}{{ $k }}: "{{ $v }}"
+    {{ end }}
 {{ end }}{{ end }}
 `)
 

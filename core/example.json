@@ -37,5 +37,8 @@
     "/disk4",
     "/disk5"
   ],
-  "log_path_dir": "/disk1/log"
+  "log_path_dir": "/disk1/log",
+  "vars":{
+    "es_scripts": false
+  }
 }

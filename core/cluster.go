@@ -38,7 +38,7 @@ func (this *Plugin) SetUrl() string {
 type Cluster struct {
 	Hosts       []Host                 `json:"hosts"`
 	ClusterName string                 `json:"cluster_name"`
-	EsConfig    map[string]interface{} `json:"es_config"`  // for some common config in a cluster
+	Vars        map[string]interface{} `json:"vars"`       // for some common config in a cluster
 	JVMConfig   map[string]interface{} `json:"jvm_config"` // for config jvm
 	Mode        string                 `json:"mode"`
 	DataPathDir []string               `json:"data_path_dir"`

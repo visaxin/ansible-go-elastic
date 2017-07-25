@@ -33,6 +33,9 @@ func TestClusterInput(t *testing.T) {
 	exceptClusterName := "test"
 	assert.Equal(t, exceptClusterName, c.ClusterName)
 
+	exceptESScript := false
+	assert.Equal(t, exceptESScript, c.Vars["es_scripts"])
+
 	exceptList := []string{"host19:9300", "host19:9301", "host19:9302"}
 	list := zenPingList(*c)
 	assert.Equal(t, 9, len(list))
@@ -49,7 +52,7 @@ func TestClusterInput(t *testing.T) {
 	for _, f := range fs {
 		name = f.Name()
 	}
-
-	_, err = ExecuteDeploy(name)
+	out, err := ExecuteDeploy(name)
 	assert.Error(t, err)
+	t.Log(string(out))
 }
