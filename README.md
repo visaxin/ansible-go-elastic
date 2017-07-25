@@ -27,8 +27,10 @@ One-click to build production level Elasticsearch.
 
 ## Example
 
-    Config a cluster:
+> Config a cluster:
     
+   Request:
+   
     curl -XPOST localhost:8080/api/v1/cluster --data '
     {
       "hosts": [
@@ -68,8 +70,12 @@ One-click to build production level Elasticsearch.
       "log_path_dir": "/path/to/log"
     }
     '
+    Response:
     
-    
+      {
+        "name": "cluster-xxxx"
+      }
+    
  * {} represents an Instance. You can provide a new config for one instance：
 
     	{
@@ -79,3 +85,13 @@ One-click to build production level Elasticsearch.
     			"bootstrap.mlockall": false
     		}
     	}
+      
+> deploy a cluster
+    
+    Request:
+    
+      curl -XPOST 'localhost:8080/api/v1/deploy?name="cluster-xxxx"'
+    
+    Response:
+      {"msg"：""}
+ 
