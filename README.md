@@ -49,7 +49,7 @@ Example:
     '
     
     
-    * {} represents an Instance. You can provide a new config：
+ * {} represents an Instance. You can provide a new config：
 
     	{
     		"log_path_dir": "/var/log/",
