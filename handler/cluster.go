@@ -24,7 +24,7 @@ func CoreHandler(c *gin.Context) {
 		c.AbortWithStatusJSON(400, gin.H{"error": err.Error(), "msg": "json parse error"})
 		return
 	}
-
+	cluster = cluster.Init()
 	var taskName string
 	taskName, err = cluster.CreateConfigFile()
 	if err != nil {

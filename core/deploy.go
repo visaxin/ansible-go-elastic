@@ -27,7 +27,7 @@ func ExecuteDeploy(name string) ([]byte, error) {
 	}
 
 	if found {
-		targetFile := fmt.Sprintf("%s/%s", name, DefaultYmlFile)
+		targetFile := fmt.Sprintf("%s/%s/%s", DefaultCacheDir, name, DefaultYmlFile)
 		cmd := exec.Command("ansible-playbook", targetFile)
 		var outBuf bytes.Buffer
 		cmd.Stdout = &outBuf

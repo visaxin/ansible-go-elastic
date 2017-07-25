@@ -6,7 +6,7 @@
         {},
         {}
       ],
-      "host_name": "cs19"
+      "host_name": "host19"
     },
     {
       "instances": [
@@ -14,7 +14,7 @@
         {},
         {}
       ],
-      "host_name": "cs20"
+      "host_name": "host20"
     },
     {
       "instances": [
@@ -22,7 +22,7 @@
         {},
         {}
       ],
-      "host_name": "cs21"
+      "host_name": "host21"
     }
   ],
   "cluster_name": "test",
