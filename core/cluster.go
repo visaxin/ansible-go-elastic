@@ -149,13 +149,14 @@ func (this *Cluster) generateAnsibleYml(cacheDir string, templateFile string) (s
 		return path, err
 	}
 
-	path = fmt.Sprintf("%s/%s-%s", cacheDir, this.ClusterName, time.Now().Format(time.RFC3339))
+	path = fmt.Sprintf("%s/%s-%d", cacheDir, this.ClusterName, time.Now().Unix())
 	err = os.MkdirAll(path, 0755)
 	if err != nil {
 		return path, err
 	}
 
-	return path, ioutil.WriteFile(path, templateBuff.Bytes(), 0655)
+	fileName := fmt.Sprintf("%s/%s", path, DefaultYmlFile)
+	return path, ioutil.WriteFile(fileName, templateBuff.Bytes(), 0755)
 }
 
 func (this *Cluster) CreateConfigFile() (string, error) {

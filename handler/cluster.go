@@ -21,14 +21,14 @@ func CoreHandler(c *gin.Context) {
 
 	err = json.Unmarshal(body, cluster)
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"error": err, "msg": "json parse error"})
+		c.AbortWithStatusJSON(400, gin.H{"error": err.Error(), "msg": "json parse error"})
 		return
 	}
 
 	var taskName string
 	taskName, err = cluster.CreateConfigFile()
 	if err != nil {
-		c.AbortWithStatusJSON(503, gin.H{"error": err, "msg": "fail to create ansible yml file"})
+		c.AbortWithStatusJSON(503, gin.H{"error": err.Error(), "msg": "fail to create ansible yml file"})
 		return
 	}
 

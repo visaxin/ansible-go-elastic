@@ -25,6 +25,6 @@ var commonConfig = map[string]interface{}{
 const (
 	StandaloneMode string = "standalone"
 
-	DefaultCacheDir = ".cache"
+	DefaultCacheDir = ".go-ansible"
 	DefaultYmlFile  = "deploy.yml"
 )
