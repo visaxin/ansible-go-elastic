@@ -28,7 +28,7 @@ func ExecuteDeploy(name string) ([]byte, error) {
 
 	if found {
 		targetFile := fmt.Sprintf("%s/%s/%s", DefaultCacheDir, name, DefaultYmlFile)
-		cmd := exec.Command("ansible-playbook", targetFile)
+		cmd := exec.Command("ansible-playbook", targetFile, ">> status.txt")
 		var outBuf bytes.Buffer
 		cmd.Stdout = &outBuf
 		cmd.Stderr = &outBuf
@@ -36,6 +36,13 @@ func ExecuteDeploy(name string) ([]byte, error) {
 		if err != nil {
 			return outBuf.Bytes(), err
 		}
+
+		go func() {
+			for {
+				outBuf.Next()
+			}
+		}()
+
 		return outBuf.Bytes(), nil
 	}
 

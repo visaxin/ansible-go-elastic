@@ -102,7 +102,7 @@ func initInstanceConfig(c *Cluster) {
 	if c.Mode == StandaloneMode {
 		cpu = runtime.NumCPU()
 	}
-	c.JVMConfig = map[string]interface{}{"es_heap_size": "20g"}
+	c.JVMConfig = map[string]interface{}{"es_heap_size": "5g"}
 	for sh, h := range c.Hosts {
 		processorMax := cpu / len(h.Instances)
 		if processorMax < 1 {

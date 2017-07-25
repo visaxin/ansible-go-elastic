@@ -3,7 +3,6 @@ package core
 import (
 	"encoding/json"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,7 +40,7 @@ func TestClusterInput(t *testing.T) {
 	exceptLogPath := "/disk1/log"
 	assert.Equal(t, exceptLogPath, c.Hosts[0].Instances[0].LogPathDir)
 
-	defer os.RemoveAll(DefaultCacheDir)
+	//defer os.RemoveAll(DefaultCacheDir)
 	_, err = c.generateAnsibleYml(DefaultCacheDir, "../deploy.yml")
 	assert.NoError(t, err)
 
