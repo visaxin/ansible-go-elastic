@@ -47,8 +47,8 @@ type Cluster struct {
 }
 
 func (this *Cluster) Init() *Cluster {
-	initInstanceConfig(*this)
-	updateInstanceConfig(*this)
+	initInstanceConfig(this)
+	updateInstanceConfig(this)
 	return this
 }
 
@@ -80,8 +80,8 @@ func zenPingList(c Cluster) []string {
 	return zenPingList
 }
 
-func updateInstanceConfig(c Cluster) {
-	list := strings.Join(zenPingList(c), ",")
+func updateInstanceConfig(c *Cluster) {
+	list := strings.Join(zenPingList(*c), ",")
 	for sh, h := range c.Hosts {
 		for serial, i := range h.Instances {
 			i.Config["discovery.zen.ping.unicast.hosts"] = list
@@ -95,47 +95,40 @@ func updateInstanceConfig(c Cluster) {
 // node.maser
 // http.port
 // transport.tcp.port
-func initInstanceConfig(c Cluster) {
-	hosts := c.Hosts
+func initInstanceConfig(c *Cluster) {
 	// standalone mode: just use runtime.
 	// multi-node cluster:  use metadata from agent
 	var cpu int = 2
 	if c.Mode == StandaloneMode {
 		cpu = runtime.NumCPU()
 	}
-	for sh, h := range hosts {
+	for sh, h := range c.Hosts {
 		processorMax := cpu / len(h.Instances)
 		if processorMax < 1 {
 			processorMax = 1
 		}
 		for serial, i := range h.Instances {
-			if i.Config == nil {
-				i.Config = commonConfig
-			} else {
-				for k, v := range commonConfig {
-					if _, ok := i.Config[k]; ok {
-						continue
-					}
-					i.Config[k] = v
-				}
+			config := make(map[string]interface{})
+			for k, v := range commonConfig {
+				config[k] = v
+			}
+			for k, v := range i.Config {
+				config[k] = v
 			}
 			var httpPort = 9200 + serial
 			var transPort = 9300 + serial
-			if _, ok := i.Config["http.port"]; !ok {
-				i.Config["http.port"] = httpPort
+			config["http.port"] = httpPort
+			config["transport.tcp.port"] = transPort
+
+			if _, ok := config["processors"]; !ok {
+				config["processors"] = processorMax
 			}
-			if _, ok := i.Config["transport.tcp.port"]; !ok {
-				i.Config["transport.tcp.port"] = transPort
-			}
-			if _, ok := i.Config["processors"]; !ok {
-				i.Config["processors"] = processorMax
-			}
-			if _, ok := i.Config["node.master"]; !ok {
-				i.Config["node.master"] = true
+			if _, ok := config["node.master"]; !ok {
+				config["node.master"] = true
 			}
 
-			i.Config["network.host"] = h.HostName
-			i.Config["network.publish_host"] = h.HostName
+			config["network.host"] = h.HostName
+			config["network.publish_host"] = h.HostName
 
 			if i.DataPathDir == "" {
 				i.DataPathDir = strings.Join(dataPathAllocation(c.DataPathDir, serial, len(h.Instances)), ",")
@@ -143,9 +136,10 @@ func initInstanceConfig(c Cluster) {
 			if i.LogPathDir == "" {
 				i.LogPathDir = c.LogPathDir
 			}
+			i.Config = config
 			h.Instances[serial] = i
+			c.Hosts[sh] = h
 		}
-		hosts[sh] = h
 	}
 }
 

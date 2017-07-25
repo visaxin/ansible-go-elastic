@@ -2,7 +2,11 @@
   "hosts": [
     {
       "instances": [
-        {},
+        {
+          "config":{
+            "processors":200
+          }
+        },
         {},
         {}
       ],
