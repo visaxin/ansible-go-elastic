@@ -70,11 +70,10 @@ One-click to build production level Elasticsearch.
       "log_path_dir": "/path/to/log"
     }
     '
-    Response:
-    
-      {
-        "name": "cluster-xxxx"
-      }
+    Response:  
+        {
+          "name": "cluster-xxxx"
+        }
     
  * {} represents an Instance. You can provide a new config for one instance：
 
@@ -93,5 +92,6 @@ One-click to build production level Elasticsearch.
       curl -XPOST 'localhost:8080/api/v1/deploy?name="cluster-xxxx"'
     
     Response:
-      {"msg"：""}
+        
+        {"msg"：""}
  
