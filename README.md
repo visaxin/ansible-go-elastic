@@ -1,13 +1,36 @@
 # ansible-go-elastic
 One-click to build production level Elasticsearch.
 
-Dependency: https://github.com/elastic/ansible-elasticsearch
+## Setup guide
+> require
+*  Go 1.8.x 
+*  Ansible 2.x
 
 
-Example:
+1. Install ansible 
 
-    Config a cluster:
+2. Clone ansible-elasticsearch and make `elasticsearch` role availiable in ansible globlly.
+  
+      
+      `git clone https://github.com/elastic/ansible-elasticsearch`
+     
+      `sudo mkdir -p /etc/ansible/roles/ && mv ansible-elasticsearch /etc/ansible/roles`
+  
+3.    
     
+     `git clone https://github.com/visaxin/ansible-go-elastic.git && cd ansible-go-elastic && go build`
+
+4. start `go-ansible-elastic-cluster` default listen on `8080`
+
+
+
+
+## Example
+
+> Config a cluster:
+    
+   Request:
+   
     curl -XPOST localhost:8080/api/v1/cluster --data '
     {
       "hosts": [
@@ -17,7 +40,7 @@ Example:
             {},
             {}
           ],
-          "host_name": "cs19"
+          "host_name": "host19"
         },
         {
           "instances": [
@@ -25,7 +48,7 @@ Example:
             {},
             {}
           ],
-          "host_name": "cs20"
+          "host_name": "host20"
         },
         {
           "instances": [
@@ -33,23 +56,26 @@ Example:
             {},
             {}
           ],
-          "host_name": "cs21"
+          "host_name": "host21"
         }
-      ],
+      ],
       "cluster_name": "test",
       "data_path_dir": [
-        "/disk1",
-        "/disk2",
-        "/disk3",
-        "/disk4",
-        "/disk5"
+        "/path1",
+        "/path2",
+        "/path3",
+        "/path4",
+        "/path5"
       ],
-      "log_path_dir": "/disk1/log"
+      "log_path_dir": "/path/to/log"
     }
     '
-    
-    
-    * {} represents an Instance. You can provide a new config：
+    Response:  
+        {
+          "name": "cluster-xxxx"
+        }
+    
+ * {} represents an Instance. You can provide a new config for one instance：
 
     	{
     		"log_path_dir": "/var/log/",
@@ -58,3 +84,14 @@ Example:
     			"bootstrap.mlockall": false
     		}
     	}
+      
+> deploy a cluster
+    
+    Request:
+    
+      curl -XPOST 'localhost:8080/api/v1/deploy?name="cluster-xxxx"'
+    
+    Response:
+        
+        {"msg"：""}
+ 

@@ -42,7 +42,6 @@ func ExecuteDeploy(name string) ([]byte, error) {
 		cmd.Stdout = mWriter
 		cmd.Stderr = mWriter
 
-		fmt.Println(outBuf.String())
 		err = cmd.Run()
 		if err != nil {
 			return outBuf.Bytes(), err
