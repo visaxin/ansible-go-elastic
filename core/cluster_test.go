@@ -54,5 +54,10 @@ func TestClusterInput(t *testing.T) {
 	}
 
 	_, err = ExecuteDeploy(name)
+	assert.Error(t, err)
+
+	// test get execute status
+	status, err := DeployStatus(name)
 	assert.NoError(t, err)
+	t.Log(string(status))
 }

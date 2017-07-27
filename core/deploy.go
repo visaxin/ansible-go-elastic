@@ -10,7 +10,7 @@ import (
 	"os/exec"
 )
 
-// execute ansible-playbook command && return the execute result
+// execute ansible-playbook command && return the execute result && continue save Stdout Stderr to local <file>.status
 func ExecuteDeploy(name string) ([]byte, error) {
 	var out []byte
 	found, err := findClusterConfig(name)
