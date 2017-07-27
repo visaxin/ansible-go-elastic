@@ -27,6 +27,7 @@ func main() {
 	{
 		v1.POST("/cluster", handler.CoreHandler)
 		v1.POST("/deploy", handler.DeployHandler)
+		v1.GET("/deploy/status", handler.DeployStatusHandler)
 
 		// plugin
 		v1.GET("/plugins", handler.PluginHandler)

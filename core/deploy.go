@@ -13,22 +13,10 @@ import (
 // execute ansible-playbook command && return the execute result
 func ExecuteDeploy(name string) ([]byte, error) {
 	var out []byte
-	deploys, err := ioutil.ReadDir(DefaultCacheDir)
+	found, err := findClusterConfig(name)
 	if err != nil {
 		return out, err
 	}
-
-	found := false
-	for _, f := range deploys {
-		if !f.IsDir() {
-			continue
-		}
-		if f.Name() == name {
-			found = true
-			break
-		}
-	}
-
 	if found {
 		var outBuf bytes.Buffer
 		targetFile := fmt.Sprintf("%s/%s/%s", DefaultCacheDir, name, DefaultYmlFile)
@@ -51,4 +39,37 @@ func ExecuteDeploy(name string) ([]byte, error) {
 	}
 
 	return out, errors.New("no found target deploy")
+}
+
+func DeployStatus(name string) ([]byte, error) {
+	var out []byte
+	found, err := findClusterConfig(name)
+	if err != nil {
+		return out, err
+	}
+	if found {
+		targetFile := fmt.Sprintf("%s/%s/%s", DefaultCacheDir, name, DefaultYmlFile)
+		return ioutil.ReadFile(targetFile + ".status")
+	}
+	return out, errors.New("no found target cluster config")
+}
+
+func findClusterConfig(name string) (bool, error) {
+	var found bool
+	deploys, err := ioutil.ReadDir(DefaultCacheDir)
+	if err != nil {
+		return found, err
+	}
+
+	for _, f := range deploys {
+		if !f.IsDir() {
+			continue
+		}
+		if f.Name() == name {
+			found = true
+			break
+		}
+	}
+
+	return found, nil
 }
