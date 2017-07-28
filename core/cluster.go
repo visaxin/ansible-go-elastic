@@ -128,8 +128,6 @@ func initInstanceConfig(c *Cluster) {
 				config["node.master"] = true
 			}
 
-			config["network.host"] = "_site_"
-
 			if i.DataPathDir == "" {
 				i.DataPathDir = strings.Join(dataPathAllocation(c.DataPathDir, serial, len(h.Instances)), ",")
 			}

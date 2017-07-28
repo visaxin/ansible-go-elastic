@@ -20,6 +20,7 @@ var commonConfig = map[string]interface{}{
 	"script.indexed":                        "on",
 	"node.max_local_storage_nodes":          1,
 	"node.data":                             true,
+	"network.host":                          "_site_",
 }
 
 const (
