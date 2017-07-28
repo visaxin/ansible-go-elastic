@@ -28,5 +28,5 @@ func DeployStatusHandler(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, gin.H{"msg": string(status)})
+	c.String(200, "%s", string(status))
 }
