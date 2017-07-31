@@ -28,4 +28,5 @@ const (
 
 	DefaultCacheDir = ".go-ansible"
 	DefaultYmlFile  = "deploy.yml"
+	DefaultHostFile = "/etc/ansible/hosts"
 )

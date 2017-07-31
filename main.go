@@ -4,14 +4,18 @@ import (
 	"flag"
 	"os"
 
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-ansible-elastic-cluster/bootstrap"
+	"github.com/go-ansible-elastic-cluster/core"
 	"github.com/go-ansible-elastic-cluster/handler"
 )
 
 func main() {
 
-	bootstrap.TemplateFile()
+	once := sync.Once{}
+	once.Do(bootstrap.TemplateFile)
 	var listenPort string
 
 	flag.StringVar(&listenPort, "p", os.Getenv("PORT_HTTP"), "listen port")
@@ -21,6 +25,9 @@ func main() {
 		listenPort = "8080"
 	}
 	router := gin.Default()
+	core.Register(func() core.MetadataRegister {
+
+	})
 
 	//v1
 	v1 := router.Group("/api/v1")
@@ -33,7 +40,7 @@ func main() {
 		v1.GET("/plugins", handler.PluginHandler)
 		v1.POST("/plugins", handler.UploadPlugin)
 	}
-
+	os.Setenv("S_PORT", listenPort)
 	router.Run(":" + listenPort)
 
 	return

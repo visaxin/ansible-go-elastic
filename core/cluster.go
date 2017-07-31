@@ -30,8 +30,8 @@ type Plugin struct {
 
 func (this *Plugin) SetUrl() string {
 	hostName, _ := os.Hostname()
-	// TODO how to connect to localhost:<PORT>
-	this.url = fmt.Sprintf("http://%s/%s-%s.zip", hostName, this.Name, this.Version)
+	port := os.Getenv("S_PORT")
+	this.url = fmt.Sprintf("http://%s:%s/%s-%s.zip", hostName, port, this.Name, this.Version)
 	return this.url
 }
 
@@ -175,6 +175,33 @@ func (this *Cluster) generateAnsibleYml(cacheDir string, templateFile string) (s
 }
 
 func (this *Cluster) CreateConfigFile() (string, error) {
+	err := this.updateHosts()
+	if err != nil {
+		return "", fmt.Errorf("err:%v, msg:%s", err, "fail to update ansible hosts file. stop create ansible yml.")
+	}
 	return this.generateAnsibleYml(DefaultCacheDir, DefaultYmlFile)
+}
+
+func (this *Cluster) updateHosts() error {
+	hostNames := map[string]bool{}
+
+	for _, h := range this.Hosts {
+		hostNames[h.HostName] = true
+	}
+
+	// TODO before write add a lock && check lock
+	f, err := os.OpenFile(DefaultHostFile, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	for k := range hostNames {
+		var erri error
+		_, erri = f.WriteString(k)
+		if erri != nil {
+			return erri
+		}
+	}
+	return nil
 
 }

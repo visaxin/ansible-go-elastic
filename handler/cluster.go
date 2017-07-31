@@ -34,7 +34,6 @@ func CoreHandler(c *gin.Context) {
 
 	// TODO Optional register resource request
 	// TODO  Optional release resource when deploy fail
-
 	//metadata.DataSource(nil).Save()
 	// TODO start to deploy
 
