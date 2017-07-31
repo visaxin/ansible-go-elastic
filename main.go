@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-ansible-elastic-cluster/bootstrap"
-	"github.com/go-ansible-elastic-cluster/core"
 	"github.com/go-ansible-elastic-cluster/handler"
 )
 
@@ -25,9 +24,6 @@ func main() {
 		listenPort = "8080"
 	}
 	router := gin.Default()
-	core.Register(func() core.MetadataRegister {
-
-	})
 
 	//v1
 	v1 := router.Group("/api/v1")
@@ -35,6 +31,7 @@ func main() {
 		v1.POST("/cluster", handler.CoreHandler)
 		v1.POST("/deploy", handler.DeployHandler)
 		v1.GET("/deploy/status", handler.DeployStatusHandler)
+		v1.GET("/deploys", handler.DeployListHandler)
 
 		// plugin
 		v1.GET("/plugins", handler.PluginHandler)

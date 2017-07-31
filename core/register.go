@@ -22,4 +22,5 @@ func Register(fn func() MetadataRegister) MetadataRegister {
 	register = func(_ string) MetadataRegister {
 		return fn()
 	}
+	return fn()
 }

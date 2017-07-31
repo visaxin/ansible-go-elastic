@@ -30,3 +30,19 @@ func DeployStatusHandler(c *gin.Context) {
 	}
 	c.String(200, "%s", string(status))
 }
+
+func DeployListHandler(c *gin.Context) {
+	name := c.Query("name")
+
+	list, err := core.DeployList(name)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{
+			"error": err.Error(),
+			"msg":   "fail to list cluster name " + name,
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"deploy_history": list,
+	})
+}

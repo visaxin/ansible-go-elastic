@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"os"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,7 +45,7 @@ func TestClusterInput(t *testing.T) {
 	exceptLogPath := "/disk1/log"
 	assert.Equal(t, exceptLogPath, c.Hosts[0].Instances[0].LogPathDir)
 
-	//defer os.RemoveAll(DefaultCacheDir)
+	defer os.RemoveAll(DefaultCacheDir)
 	_, err = c.generateAnsibleYml(DefaultCacheDir, "../deploy.yml")
 	assert.NoError(t, err)
 
@@ -60,4 +62,10 @@ func TestClusterInput(t *testing.T) {
 	status, err := DeployStatus(name)
 	assert.NoError(t, err)
 	t.Log(string(status))
+
+	cl, err := listDeployHistory(exceptClusterName)
+
+	assert.NoError(t, err)
+	assert.Equal(t, name, cl[0])
+
 }

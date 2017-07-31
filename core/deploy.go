@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // execute ansible-playbook command && return the execute result && continue save Stdout Stderr to local <file>.status
@@ -39,6 +40,32 @@ func ExecuteDeploy(name string) ([]byte, error) {
 	}
 
 	return out, errors.New("no found target deploy")
+}
+
+func listDeployHistory(name string) ([]string, error) {
+	var foundList = make([]string, 0)
+	deploys, err := ioutil.ReadDir(DefaultCacheDir)
+	if err != nil {
+		return foundList, err
+	}
+	for _, f := range deploys {
+		if !f.IsDir() {
+			continue
+		}
+		parse := strings.Split(f.Name(), "-")
+		if len(parse) != 2 {
+			continue
+		}
+		cn := parse[0]
+		if cn == name {
+			foundList = append(foundList, f.Name())
+		}
+	}
+	return foundList, nil
+}
+
+func DeployList(name string) ([]string, error) {
+	return listDeployHistory(name)
 }
 
 func DeployStatus(name string) ([]byte, error) {
