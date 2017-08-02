@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"html/template"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -182,18 +184,38 @@ func (this *Cluster) CreateConfigFile() (string, error) {
 	return this.generateAnsibleYml(DefaultCacheDir, DefaultYmlFile)
 }
 
+var lock sync.Mutex = sync.Mutex{}
+
 func (this *Cluster) updateHosts() error {
 	hostNames := map[string]bool{}
 
-	for _, h := range this.Hosts {
-		hostNames[h.HostName] = true
-	}
+	savedHostName := map[string]bool{}
 
+	lock.Lock()
+	defer lock.Unlock()
 	// TODO before write add a lock && check lock
 	f, err := os.OpenFile(DefaultHostFile, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		return err
 	}
+
+	r := bufio.NewReader(f)
+	var (
+		isPrefix bool = true
+		line     []byte
+	)
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		savedHostName[string(line)] = true
+	}
+
+	for _, h := range this.Hosts {
+		if _, found := savedHostName[h.HostName]; found {
+			continue
+		}
+		hostNames[h.HostName] = true
+	}
+
 	defer f.Close()
 	for k := range hostNames {
 		var erri error
