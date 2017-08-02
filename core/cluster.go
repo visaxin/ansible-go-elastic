@@ -40,8 +40,7 @@ func (this *Plugin) SetUrl() string {
 type Cluster struct {
 	Hosts       []Host                 `json:"hosts"`
 	ClusterName string                 `json:"cluster_name"`
-	Vars        map[string]interface{} `json:"vars"`       // for some common config in a cluster
-	JVMConfig   map[string]interface{} `json:"jvm_config"` // for config jvm
+	Vars        map[string]interface{} `json:"vars"` // for some common config in a cluster
 	Mode        string                 `json:"mode"`
 	DataPathDir []string               `json:"data_path_dir"`
 	LogPathDir  string                 `json:"log_path_dir"`
@@ -60,7 +59,6 @@ func Create(name string, hosts []Host, dataPathDir []string, logPathDir string) 
 		ClusterName: name,
 		DataPathDir: dataPathDir,
 		LogPathDir:  logPathDir,
-		JVMConfig:   map[string]interface{}{"es_heap_size": "20g"},
 	}
 	return c.Init()
 }
@@ -104,7 +102,6 @@ func initInstanceConfig(c *Cluster) {
 	if c.Mode == StandaloneMode {
 		cpu = runtime.NumCPU()
 	}
-	c.JVMConfig = map[string]interface{}{"es_heap_size": "5g"}
 	for sh, h := range c.Hosts {
 		processorMax := cpu / len(h.Instances)
 		if processorMax < 1 {
@@ -194,19 +191,14 @@ func (this *Cluster) updateHosts() error {
 	lock.Lock()
 	defer lock.Unlock()
 	// TODO before write add a lock && check lock
-	f, err := os.OpenFile(DefaultHostFile, os.O_APPEND|os.O_WRONLY, 0600)
+	f, err := os.OpenFile(DefaultHostFile, os.O_APPEND|os.O_RDWR, 0600)
 	if err != nil {
 		return err
 	}
 
-	r := bufio.NewReader(f)
-	var (
-		isPrefix bool = true
-		line     []byte
-	)
-	for isPrefix && err == nil {
-		line, isPrefix, err = r.ReadLine()
-		savedHostName[string(line)] = true
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		savedHostName[scanner.Text()] = true
 	}
 
 	for _, h := range this.Hosts {
@@ -215,7 +207,6 @@ func (this *Cluster) updateHosts() error {
 		}
 		hostNames[h.HostName] = true
 	}
-
 	defer f.Close()
 	for k := range hostNames {
 		var erri error

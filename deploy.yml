@@ -8,7 +8,6 @@
         cluster.name: {{$.ClusterName}}
         {{ range $k,$v := $e.Config }}{{ $k }}: "{{ $v }}"
         {{ end }}
-      es_heap_size: {{index $.JVMConfig "es_heap_size" }}
       es_instance_name: {{ $h.HostName }}-{{ $i }}
       es_data_dirs: "{{ $e.DataPathDir }}"
       es_log_dir: "{{ $e.LogPathDir }}"
