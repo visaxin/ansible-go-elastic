@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+// TODO enable retry
+
 // execute ansible-playbook command && return the execute result && continue save Stdout Stderr to local <file>.status
 func ExecuteDeploy(name string) ([]byte, error) {
 	var out []byte
@@ -27,6 +29,7 @@ func ExecuteDeploy(name string) ([]byte, error) {
 			return outBuf.Bytes(), err
 		}
 		mWriter := io.MultiWriter(f, os.Stdout, &outBuf)
+		// TODO add a lock to local to ensure one task can be executed at most once
 		cmd := exec.Command("ansible-playbook", targetFile)
 		cmd.Stdout = mWriter
 		cmd.Stderr = mWriter

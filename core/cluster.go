@@ -219,7 +219,7 @@ func (this *Cluster) updateHosts() error {
 	defer f.Close()
 	for k := range hostNames {
 		var erri error
-		_, erri = f.WriteString(k)
+		_, erri = f.WriteString(k + "\n")
 		if erri != nil {
 			return erri
 		}
